@@ -1,0 +1,12 @@
+ingestion:
+  db_name: ${NEO4J_DATABASE}
+  urls:
+    person: ${PERSON_URL}
+    education: ${EDUCATION_URL}
+    experience: ${EXPERIENCE_URL}
+    language: ${LANGUAGE_URL}
+    honour_and_awards: ${HONOUR_AND_AWARDS_URL}
+    recommendation: ${RECOMMENDATION_URL}
+    blog: ${BLOG_URL}
+    projects: ${PROJECT_URL}
+    certifications: ${CERTIFICATION_URL}

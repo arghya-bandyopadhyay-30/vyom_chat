@@ -1,0 +1,4 @@
+python-dotenv
+pyyaml
+langchain_community
+neo4j
