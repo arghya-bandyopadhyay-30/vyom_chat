@@ -26,7 +26,7 @@ class GraphClient:
             """
             WITH $data AS batch
             UNWIND batch AS node
-            MERGE (k {id: node.id})  // Use `node.id` as the unique identifier
+            MERGE (k {id: node.id}) 
             WITH k, node
             CALL apoc.create.addLabels(k, [node.node_type]) YIELD node AS labeledNode
             WITH labeledNode, node
@@ -58,16 +58,16 @@ class GraphClient:
             """
             WITH $data AS batch
             UNWIND batch AS edge
-            MATCH (from {id: edge.from_node})  
-            MATCH (to {id: edge.to_node})
+            MATCH (from {id: edge.from_node_id})  
+            MATCH (to {id: edge.to_node_id})
             CALL apoc.create.relationship(from, edge.relationship_type, {}, to) YIELD rel
             RETURN rel
             """,
             {
                 "data": [
                     {
-                        "from_node": edge.from_node,  # Use `from_node` and `to_node` as IDs
-                        "to_node": edge.to_node,
+                        "from_node_id": edge.from_node.id,  # Extract `id` from Node object
+                        "to_node_id": edge.to_node.id,  # Extract `id` from Node object
                         "relationship_type": edge.relationship_type,
                     }
                     for edge in edges

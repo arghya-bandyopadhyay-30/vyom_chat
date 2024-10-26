@@ -1,8 +1,9 @@
-class Node:
-    def __init__(self, id: str, node_type: str, parameters: dict):
-        self.id = id
-        self.node_type = node_type
-        self.parameters = parameters
+from typing import Dict, Any
+from pydantic.dataclasses import dataclass
+from pydantic import Field
 
-    def __repr__(self):
-        return f"Node(type={self.node_type}, parameters={self.parameters})"
+@dataclass
+class Node:
+    id: str
+    node_type: str
+    parameters: Dict[str, Any] = Field(default_factory=dict)
