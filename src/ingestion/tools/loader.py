@@ -8,10 +8,16 @@ from src.ingestion.utiliies.uuid_provider import UUIDProvider
 
 
 class Loader:
+    """
+    Loader class to process data, create nodes and edges, and populate a Neo4j graph database.
+    Handles skill extraction and mapping relationships based on node types.
+    """
     def __init__(self, ingestion_config: Ingestion):
         self.urls = ingestion_config.urls
         self.graph_client = ingestion_config.graph_client
         self.person_node = None
+        self.unique_skills = set()
+        self.skill_nodes = {}
         self.relationship_mapping = {
             "education": "HAS_EDUCATION",
             "experience": "HAS_EXPERIENCE",
@@ -21,6 +27,7 @@ class Loader:
             "blog": "AUTHORED",
             "projects": "WORKED_ON_PROJECT",
             "certifications": "HAS_CERTIFICATION",
+            "skills": "IS_SKILLED",
         }
 
     async def run(self):
@@ -30,17 +37,21 @@ class Loader:
         nodes, edges = self.process_data()
         self.graph_client.populate_graph(nodes, edges)
 
+    def __extract_skills(self, skills_field: str) -> list[str]:
+        """
+        Extracts individual skills from a skills field, assuming skills are separated by '|'.
+        """
+        return [skill.strip() for skill in skills_field.split("|") if skill.strip()]
+
     def __create_nodes(self, node_type: str, row: dict) -> Node:
         """
-        Create a Node object with a unique id and node type.
+        Creates a Node object with a unique ID and node type.
         """
-        node = Node(
-            id=UUIDProvider.generate_id(),
-            node_type=node_type,
-            parameters=row,
-        )
+        skills = self.__extract_skills(row.get("skills", ""))
+        self.unique_skills.update(skills)
+        node = Node(id=UUIDProvider.generate_id(), node_type=node_type, parameters=row)
 
-        if node_type == "person":
+        if node_type == "person" and not self.person_node:
             self.person_node = node
 
         return node
@@ -59,15 +70,47 @@ class Loader:
                 continue
 
             relationship_type = self.relationship_mapping.get(node.node_type)
-            edges.append(
-                Edge(
-                    from_node=self.person_node,
-                    to_node=node,
-                    relationship_type=relationship_type
-                )
-            )
+            edges.append(Edge(
+                from_node=self.person_node,
+                to_node=node,
+                relationship_type=relationship_type
+            ))
+
+            if node.node_type in {"experience", "projects", "certifications"}:
+                edges.extend(self.__create_skill_edges(node))
 
         return edges
+
+    def __create_skill_nodes(self) -> list[Node]:
+        """
+         Creates nodes for unique skills extracted from data.
+        """
+        for skill in self.unique_skills:
+            if skill not in self.skill_nodes:
+                skill_node = self.__create_nodes("skills", {'name': skill})
+                self.skill_nodes[skill] = skill_node
+
+        return list(self.skill_nodes.values())
+
+    def __create_skill_edges(self, node: Node) -> list[Edge]:
+        """
+        Creates edges between experience, project, or certification nodes and skill nodes.
+        """
+        skill_edges = []
+        skills = self.__extract_skills(node.parameters.pop("skills", ""))
+
+        for skill in skills:
+            skill_node = self.skill_nodes.get(skill)
+            if skill_node:
+                skill_edges.append(
+                    Edge(
+                        from_node=node,
+                        to_node=skill_node,
+                        relationship_type="REQUIRED_SKILL"
+                    )
+                )
+
+        return skill_edges
 
     def process_data(self) -> tuple[list[Node], list[Edge]]:
         """
@@ -80,6 +123,8 @@ class Loader:
 
             for row in csv_data:
                 nodes.append(self.__create_nodes(node_type, row))
+
+        nodes.extend(self.__create_skill_nodes())
 
         edges = self.__create_edges(nodes)
 
