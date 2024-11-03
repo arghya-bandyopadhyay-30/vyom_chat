@@ -1,4 +1,3 @@
-import numpy as np
 from neo4j import GraphDatabase
 
 from src.ingestion.models.edges import Edge
@@ -18,10 +17,6 @@ class GraphClient:
         self.__create_edges(edges)
 
     def __create_nodes(self, nodes: list[Node]):
-        """
-        Creates nodes in the Neo4j database using the Node objects provided.
-        Uses APOC to dynamically set labels and properties.
-        """
         return self.driver.execute_query(
             """
             WITH $data AS batch
@@ -48,9 +43,6 @@ class GraphClient:
         )
 
     def __create_edges(self, edges: list[Edge]):
-        """
-        Creates edges in the Neo4j database using the Edge objects provided.
-        """
         if not edges:
             return
 
@@ -77,9 +69,6 @@ class GraphClient:
         )
 
     def delete_all(self):
-        """
-        Deletes all nodes and relationships in the database.
-        """
         self.driver.execute_query(
             """
                 MATCH (n) DETACH DELETE n
