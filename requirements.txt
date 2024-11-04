@@ -1,5 +1,8 @@
 python-dotenv
 pyyaml
+langchain
 langchain_community
 neo4j
 streamlit
+sentence-transformers
+langchain_huggingface

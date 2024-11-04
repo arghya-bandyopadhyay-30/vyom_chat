@@ -1,23 +1,24 @@
 from dataclasses import dataclass
 
-from src.embedding.models.settings import Settings
-
 @dataclass
 class Embedding:
     model: str
-    settings: Settings
+    model_name: str
+    api_key: str
 
     @classmethod
     def from_dict(cls, config: dict):
         if "model" not in config or not config["model"]:
             raise ValueError("Embedding model is required")
 
-        if "settings" not in config or not config["settings"]:
-            raise ValueError("Embedding settings are required")
+        if "model-name" not in config or not config["model-name"]:
+            raise ValueError("Embedding model_name are required")
 
-        settings = Settings.from_dict(config["settings"])
+        if "api-key" not in config or not config["api-key"]:
+            raise ValueError("Embedding api_key are required")
 
         return cls(
             model=config["model"],
-            settings=settings
+            model_name=config["model-name"],
+            api_key=config["api-key"]
         )

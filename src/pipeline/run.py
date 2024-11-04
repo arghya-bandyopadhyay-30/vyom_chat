@@ -6,7 +6,7 @@ from src.pipeline.model.config import Config
 from src.pipeline.service.config_service import ConfigService
 
 async def run_task(config: Config):
-    loader = Loader(config.ingestion_config)
+    loader = Loader(config)
     await loader.run()
 
 async def run(file_path:str):

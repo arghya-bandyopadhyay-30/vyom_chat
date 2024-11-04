@@ -1,20 +1,23 @@
 import csv
 import requests
 
+from src.embedding.service.embedding_service import EmbeddingService
 from src.ingestion.models.edges import Edge
 from src.ingestion.models.ingestion import Ingestion
 from src.ingestion.models.nodes import Node
 from src.ingestion.utiliies.uuid_provider import UUIDProvider
+from src.pipeline.model.config import Config
 
 
 class Loader:
-    """
-    Loader class to process data, create nodes and edges, and populate a Neo4j graph database.
-    Handles skill extraction and mapping relationships based on node types.
-    """
-    def __init__(self, ingestion_config: Ingestion):
-        self.urls = ingestion_config.urls
-        self.graph_client = ingestion_config.graph_client
+    def __init__(self, config: Config):
+        self.ingestion_config = config.ingestion_config
+        self.embedding_config = config.embedding_config
+
+        self.urls = self.ingestion_config.urls
+        self.graph_client = self.ingestion_config.graph_client
+        self.embedding_service = EmbeddingService(self.embedding_config)
+
         self.person_node = None
         self.unique_skills = set()
         self.skill_nodes = {}
@@ -31,35 +34,38 @@ class Loader:
         }
 
     async def run(self):
-        """
-        Main method to process data and populate the graph.
-        """
         nodes, edges = self.process_data()
         self.graph_client.populate_graph(nodes, edges)
 
     def __extract_skills(self, skills_field: str) -> list[str]:
-        """
-        Extracts individual skills from a skills field, assuming skills are separated by '|'.
-        """
         return [skill.strip() for skill in skills_field.split("|") if skill.strip()]
 
     def __create_nodes(self, node_type: str, row: dict) -> Node:
-        """
-        Creates a Node object with a unique ID and node type.
-        """
         skills = self.__extract_skills(row.get("skills", ""))
         self.unique_skills.update(skills)
-        node = Node(id=UUIDProvider.generate_id(), node_type=node_type, parameters=row)
+
+        node = Node(
+            id=UUIDProvider.generate_id(),
+            node_type=node_type,
+            parameters=row
+        )
+
+        self.__embed_text_fields(row, node)
 
         if node_type == "person" and not self.person_node:
             self.person_node = node
 
         return node
 
+    def __embed_text_fields(self, row: dict, node: Node):
+        text_fields = ["summary", "message", "description"]
+
+        for field in text_fields:
+            if field in row and row[field]:
+                embedding = self.embedding_service.embed_text(row[field])
+                node.parameters[f"{field}_embedding"] = embedding
+
     def __create_edges(self, nodes: list[Node]) -> list[Edge]:
-        """
-        Create edges from each person node to other nodes based on the node_type.
-        """
         if not self.person_node:
             raise ValueError("Person node not found. Ensure person data is present.")
 
@@ -82,9 +88,6 @@ class Loader:
         return edges
 
     def __create_skill_nodes(self) -> list[Node]:
-        """
-         Creates nodes for unique skills extracted from data.
-        """
         for skill in self.unique_skills:
             if skill not in self.skill_nodes:
                 skill_node = self.__create_nodes("skills", {'name': skill})
@@ -93,9 +96,6 @@ class Loader:
         return list(self.skill_nodes.values())
 
     def __create_skill_edges(self, node: Node) -> list[Edge]:
-        """
-        Creates edges between experience, project, or certification nodes and skill nodes.
-        """
         skill_edges = []
         skills = self.__extract_skills(node.parameters.pop("skills", ""))
 
@@ -113,9 +113,6 @@ class Loader:
         return skill_edges
 
     def process_data(self) -> tuple[list[Node], list[Edge]]:
-        """
-        Processes data from URLs to create nodes and edges for the graph.
-        """
         nodes = []
 
         for node_type, url in self.urls.items():
@@ -131,10 +128,6 @@ class Loader:
         return nodes, edges
 
     def __fetch_csv_data(self, url) -> list[dict[str, str]]:
-        """
-        Fetches CSV data from a URL and returns a list of dictionaries, where each
-        dictionary represents a row with column names as keys.
-        """
         response = requests.get(url)
         response.raise_for_status()
 
