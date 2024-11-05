@@ -11,7 +11,14 @@ ingestion:
     projects: ${PROJECT_URL}
     certifications: ${CERTIFICATION_URL}
 
-embedding-models:
-  model: "HuggingFace"
-  model-name: "all-MiniLM-L6-v2"
+embedding-model:
+  model: HuggingFace
+  model-name: all-MiniLM-L6-v2
   api-key: ${HF_TOKEN}
+
+llm-model:
+  provider: ChatGroq
+  api-key: ${GROQ_API_KEY}
+  model: gemma2-9b-it
+  base-url: https://api.groq.com/openai/v1
+  context-window: 8192

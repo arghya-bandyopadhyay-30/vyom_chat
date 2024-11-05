@@ -11,6 +11,7 @@ async def run_task(config: Config):
 
 async def run(file_path:str):
     config = ConfigService(file_path).get_config()
+    print(config.llm_config)
     await run_task(config)
 
 if __name__ == "__main__":

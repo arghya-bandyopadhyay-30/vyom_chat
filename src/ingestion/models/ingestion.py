@@ -11,10 +11,10 @@ class Ingestion:
     @classmethod
     def from_dict(cls, config: dict):
         if "db_name" not in config or not config["db_name"]:
-            raise ValueError("Ingestion db_name is required")
+            raise ValueError("Ingestion configuration: db_name is required")
 
         if "urls" not in config or not config["urls"]:
-            raise ValueError("Ingestion urls are required")
+            raise ValueError("Ingestion configuration: urls are required")
 
         graph_client_builder = GraphClientBuilder(config["db_name"])
         graph_client = graph_client_builder.client()

@@ -8,14 +8,10 @@ class Embedding:
 
     @classmethod
     def from_dict(cls, config: dict):
-        if "model" not in config or not config["model"]:
-            raise ValueError("Embedding model is required")
-
-        if "model-name" not in config or not config["model-name"]:
-            raise ValueError("Embedding model_name are required")
-
-        if "api-key" not in config or not config["api-key"]:
-            raise ValueError("Embedding api_key are required")
+        required_fields = ["model", "model-name", "api-key"]
+        for field in required_fields:
+            if field not in config or not config[field]:
+                raise ValueError(f"Embedding configuration: '{field}' is required")
 
         return cls(
             model=config["model"],

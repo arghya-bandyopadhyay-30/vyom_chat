@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from src.embedding.models.embedding import Embedding
 from src.ingestion.models.ingestion import Ingestion
+from src.llm.model.llm import LLMConfig
 from src.pipeline.model.config import Config
 
 
@@ -28,10 +29,14 @@ class ConfigService:
         if "ingestion" not in config_data:
             raise ValueError("Ingestion configuration is required in config.yml")
 
-        if "embedding-models" not in config_data:
+        if "embedding-model" not in config_data:
             raise ValueError("Embedding configuration is required in config.yml")
 
-        ingestion = Ingestion.from_dict(config_data["ingestion"])
-        embedding = Embedding.from_dict(config_data["embedding-models"])
+        if "llm-model" not in config_data:
+            raise ValueError("LLM configuration is required in config.yml")
 
-        return Config(ingestion_config=ingestion, embedding_config=embedding)
+        ingestion = Ingestion.from_dict(config_data["ingestion"])
+        embedding = Embedding.from_dict(config_data["embedding-model"])
+        llm = LLMConfig.from_dict(config_data["llm-model"])
+
+        return Config(ingestion_config=ingestion, embedding_config=embedding, llm_config=llm)
