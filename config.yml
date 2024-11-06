@@ -20,5 +20,3 @@ llm-model:
   provider: ChatGroq
   api-key: ${GROQ_API_KEY}
   model: gemma2-9b-it
-  base-url: https://api.groq.com/openai/v1
-  context-window: 8192
