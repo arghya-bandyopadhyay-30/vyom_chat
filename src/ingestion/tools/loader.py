@@ -1,22 +1,18 @@
 import csv
 import requests
 
+from src.embedding.models.embedding import Embedding
 from src.embedding.service.embedding_service import EmbeddingService
 from src.ingestion.models.edges import Edge
 from src.ingestion.models.ingestion import Ingestion
 from src.ingestion.models.nodes import Node
 from src.ingestion.utiliies.uuid_provider import UUIDProvider
-from src.pipeline.model.config import Config
-
 
 class Loader:
-    def __init__(self, config: Config):
-        self.ingestion_config = config.ingestion_config
-        self.embedding_config = config.embedding_config
-
-        self.urls = self.ingestion_config.urls
-        self.graph_client = self.ingestion_config.graph_client
-        self.embedding_service = EmbeddingService(self.embedding_config)
+    def __init__(self, ingestion_config: Ingestion, embedding_config: Embedding):
+        self.urls = ingestion_config.urls
+        self.graph_client = ingestion_config.graph_client
+        self.embedding_service = EmbeddingService(embedding_config)
 
         self.person_node = None
         self.unique_skills = set()

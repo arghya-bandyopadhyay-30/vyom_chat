@@ -4,7 +4,7 @@ from src.embedding.service.embedding_service import EmbeddingService
 from src.llm.utilities.sample_question_embedding import SampleQuestionEmbedding
 
 
-class PromptIdentifier:
+class CategoryIdentifier:
     def __init__(self, embedding_service: EmbeddingService):
         self.sample_embedding = SampleQuestionEmbedding(embedding_service)
         self.sample_embedding.embed_sample_questions()
