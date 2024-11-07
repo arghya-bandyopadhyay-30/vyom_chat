@@ -11,6 +11,7 @@ from src.pipeline.model.config import Config
 class ConfigService:
     def __init__(self, file_path: str):
         load_dotenv()
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
         self.path = file_path
 
     def __load_config(self) -> dict:
