@@ -1,12 +1,6 @@
 from urllib.parse import urlparse, parse_qs
 
 def convert_to_csv_url(url: str) -> str:
-    """
-        Converts a Google Sheets URL to a direct CSV download URL.
-
-        :param url: Original Google Sheets URL in "edit" format
-        :return: Modified URL in "export?format=csv&gid=" format
-    """
     parsed_url = urlparse(url)
 
     sheet_id = parsed_url.path.split('/')[3]

@@ -1,27 +1,25 @@
-from langchain.schema import HumanMessage, SystemMessage
+from langchain.chains import GraphCypherQAChain
+from langchain_community.graphs import Neo4jGraph
 from langchain_groq import ChatGroq
 
-from src.embedding.models.embedding import Embedding
-from src.embedding.service.embedding_service import EmbeddingService
 from src.llm.model.llm import LLMConfig
-from src.llm.utilities.prompt import PromptManager
+from src.llm.utilities.prompt_identifier import PromptIdentifier
 
 
 class LLMService:
-    def __init__(self, llm_config: LLMConfig, embedding_config: Embedding):
-        self.provider = llm_config.provider
-        self.groq_api_key = llm_config.api_key
-        self.model_name = llm_config.model
+    def __init__(self, llm_config: LLMConfig, graph_client: Neo4jGraph):
+        self.llm = self.__initialize_llm(llm_config)
+        prompt = PromptIdentifier().get_prompt_template()
+        self.chain = GraphCypherQAChain.from_llm(
+            graph=graph_client,
+            llm=self.llm,
+            cypher_prompt=prompt,
+            verbose=True,
+            allow_dangerous_requests=True
+        )
 
-        self.llm = ChatGroq(groq_api_key=self.groq_api_key, model_name=self.model_name)
+    def __initialize_llm(self, llm_config: LLMConfig) -> ChatGroq:
+        return ChatGroq(groq_api_key=llm_config.api_key, model_name=llm_config.model)
 
-        self.embedding_service = EmbeddingService(embedding_config)
-        self.prompt_manager = PromptManager(self.embedding_service)
-
-    async def query(self, text: str):
-        prompts = self.__generate_prompt(text)
-        response = await self.llm.agenerate(messages=[prompts])
-        return response.generations[0][0].text
-
-    def __generate_prompt(self, text: str) -> list:
-        return self.prompt_manager.get_agent_prompt(text)
+    def query(self, question: str):
+        return self.chain.invoke({"query": question})

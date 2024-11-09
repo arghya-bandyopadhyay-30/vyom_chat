@@ -9,10 +9,9 @@ from src.ingestion.models.nodes import Node
 from src.ingestion.utiliies.uuid_provider import UUIDProvider
 
 class Loader:
-    def __init__(self, ingestion_config: Ingestion, embedding_config: Embedding):
+    def __init__(self, ingestion_config: Ingestion):
         self.urls = ingestion_config.urls
         self.graph_client = ingestion_config.graph_client
-        self.embedding_service = EmbeddingService(embedding_config)
 
         self.person_node = None
         self.unique_skills = set()
@@ -46,20 +45,10 @@ class Loader:
             parameters=row
         )
 
-        self.__embed_text_fields(row, node)
-
         if node_type == "person" and not self.person_node:
             self.person_node = node
 
         return node
-
-    def __embed_text_fields(self, row: dict, node: Node):
-        text_fields = ["summary", "message", "description"]
-
-        for field in text_fields:
-            if field in row and row[field]:
-                embedding = self.embedding_service.embed_text(row[field])
-                node.parameters[f"{field}_embedding"] = embedding
 
     def __create_edges(self, nodes: list[Node]) -> list[Edge]:
         if not self.person_node:

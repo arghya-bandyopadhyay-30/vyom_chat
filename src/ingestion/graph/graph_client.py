@@ -13,12 +13,10 @@ class GraphClient:
             database=db_name
         )
 
-    def close(self):
-        self.graph.close()
-
     def populate_graph(self, nodes: list[Node], edges: list[Edge]):
         self.__create_nodes(nodes)
         self.__create_edges(edges)
+        self.refresh_schema()
 
     def __create_nodes(self, nodes: list[Node]):
         return self.graph.query(
@@ -69,6 +67,9 @@ class GraphClient:
                 ]
             },
         )
+
+    def refresh_schema(self):
+        self.graph.refresh_schema()
 
     def delete_all(self):
         self.graph.query(
