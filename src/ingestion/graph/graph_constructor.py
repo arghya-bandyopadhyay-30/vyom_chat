@@ -13,6 +13,7 @@ class GraphClientBuilder:
     def client(self):
         return GraphClient(
             url=self.neo4j_url,
-            auth=self.auth,
+            username=self.neo4j_username,
+            password=self.neo4j_password,
             db_name=self.db_name
         )

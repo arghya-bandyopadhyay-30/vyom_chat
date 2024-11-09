@@ -10,8 +10,8 @@ async def run_task(config: Config):
     loader = Loader(config.ingestion_config, config.embedding_config)
     await loader.run()
 
-    llm_service = LLMService(config.llm_config, config.embedding_config)
-    await user_input(llm_service)
+    # llm_service = LLMService(config.llm_config, config.embedding_config, config.ingestion_config)
+    # await user_input(llm_service)
 
 async def user_input(llm_service):
     print("Welcome to Vyom! You can ask any question about Arghya. Type 'bye' or 'exit' to end the conversation.")
@@ -22,11 +22,8 @@ async def user_input(llm_service):
             print("Vyom: Goodbye! Feel free to return anytime.")
             break
 
-        try:
-            response = await llm_service.query(user_input)
-            print(f"Vyom: {response}")
-        except Exception as e:
-            print(f"Error: {e}")
+        response = await llm_service.query(user_input)
+        print(f"Vyom: {response}")
 
 
 async def run(file_path:str):
