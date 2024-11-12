@@ -1,6 +1,6 @@
 from langchain_core.prompts import PromptTemplate, FewShotPromptTemplate
 from src.llm.utilities.query_examples import examples
-from src.pipeline.tools.string_literals import PREFIX_TEXT, SUFFIX_TEXT, EXAMPLE_PROMPT_TEMPLATE
+from src.llm.tools.string_literals import PREFIX_TEXT, SUFFIX_TEXT, EXAMPLE_PROMPT_TEMPLATE
 
 class PromptIdentifier:
     def __init__(self):
