@@ -40,4 +40,4 @@ class Web:
                 })
                 st.chat_message("assistant").write(response['result'])
             else:
-                st.error("Failed to get a valid response from Vyom. Please try again.")
+                st.error("Vyom failed to get a valid response. Please try again.")

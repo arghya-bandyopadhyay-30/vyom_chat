@@ -11,22 +11,21 @@ async def run_task(config: Config):
     loader = Loader(config.ingestion_config)
     await loader.run()
 
-    # llm_service = LLMService(config.llm_config, config.ingestion_config.graph_client.graph)
-    # await user_input(llm_service)
+    llm_service = LLMService(config.llm_config, config.ingestion_config.graph_client.graph)
+    await user_input(llm_service)
+
 
 async def user_input(llm_service):
     print("Welcome to Vyom! You can ask any question about Arghya. Type 'bye' or 'exit' to end the conversation.")
     while True:
-        user_input = input("You: ")
-
+        user_input = input("You: ").strip()
         if user_input.lower() in ["bye", "exit"]:
-            print("Vyom: Goodbye! Feel free to return anytime.")
+            print("Vyom: Goodbye!")
             break
-
         response = llm_service.query(user_input)
-        print(f"Vyom: {response['result']}")
+        print(f"Vyom: {response}")
 
-async def run(file_path:str):
+async def run(file_path: str):
     config = ConfigService(file_path).get_config()
     await run_task(config)
 
