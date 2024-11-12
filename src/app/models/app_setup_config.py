@@ -22,7 +22,7 @@ class AppSetupConfig:
         graph_client = graph_client_builder.client()
 
         return cls(
-            page_title=config["page_title"],
+            page_title=config.get("page_title", "Vyom"),
             page_icon=config.get("page_icon", "🧘‍♂️"),
             title=config["title"],
             subtitle=config["subtitle"],

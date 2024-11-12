@@ -11,7 +11,7 @@ async def run_task(config: Config):
     loader = Loader(config.ingestion_config)
     await loader.run()
 
-    llm_service = LLMService(config.llm_config, config.ingestion_config.graph_client.graph)
+    # llm_service = LLMService(config.llm_config, config.ingestion_config.graph_client.graph)
     # await user_input(llm_service)
 
 async def user_input(llm_service):

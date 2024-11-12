@@ -1,5 +1,4 @@
 import streamlit as st
-from langchain_community.graphs import Neo4jGraph
 
 from src.app.models.app_setup_config import AppSetupConfig
 from src.llm.model.llm import LLMConfig
@@ -12,12 +11,7 @@ class Web:
         self.page_icon = app_config.page_icon
         self.title = app_config.title
         self.subtitle = app_config.subtitle
-        self.graph = Neo4jGraph(
-            url="neo4j://localhost:7687",
-            username="neo4j",
-            password="12345678",
-            database="neo4j"
-        )
+        self.graph = app_config.graph_client.graph
         self.llm_service = LLMService(llm_config, self.graph)
 
     def run(self):
@@ -25,8 +19,6 @@ class Web:
         st.title(self.title)
         st.subheader(self.subtitle)
 
-        # if "session_id" not in st.session_state:
-        #     st.session_state.session_id = str(uuid.uuid4())
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
@@ -41,8 +33,11 @@ class Web:
             st.chat_message("user").write(prompt)
 
             response = self.llm_service.query(prompt)
-            st.session_state["messages"].append({
-                "role": "assistant",
-                "content": response['result']
-            })
-            st.chat_message("assistant").write(response['result'])
+            if response and 'result' in response:
+                st.session_state["messages"].append({
+                    "role": "assistant",
+                    "content": response['result']
+                })
+                st.chat_message("assistant").write(response['result'])
+            else:
+                st.error("Failed to get a valid response from Vyom. Please try again.")
