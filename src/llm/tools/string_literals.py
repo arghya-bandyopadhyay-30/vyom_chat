@@ -1,3 +1,7 @@
+VYOM_LABEL = "vyom"
+
+ARGHYA_LABEL = "arghya"
+
 EXAMPLE_PROMPT_TEMPLATE = "User input: {question}\nCypher query: {query}"
 
 PREFIX_TEXT = """
