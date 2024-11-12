@@ -5,6 +5,7 @@ from langchain_community.graphs import Neo4jGraph
 from langchain.schema import HumanMessage
 from langchain_core.tools import StructuredTool
 from langchain_groq import ChatGroq
+from langchain.globals import set_verbose
 
 from src.llm.model.llm import LLMConfig
 from src.llm.utilities.prompt_identifier import PromptIdentifier
@@ -13,6 +14,7 @@ from src.llm.tools.query_neo4j_tool import QueryNeo4jTool
 
 class LLMService:
     def __init__(self, llm_config: LLMConfig, graph_client: Neo4jGraph):
+        set_verbose(True)
         self.llm = self.__initialize_llm(llm_config)
         self.query_tool = QueryNeo4jTool(graph_client)
         self.prompt_identifier = PromptIdentifier().get_prompt_template()
@@ -47,7 +49,7 @@ class LLMService:
         )
 
     def __initialize_agent_executor(self, tools: list[StructuredTool]) -> AgentExecutor:
-        return AgentExecutor(agent=self.agent, tools=tools, verbose=True)
+        return AgentExecutor(agent=self.agent, tools=tools)
 
 
     def query(self, question: str) -> str | list[str | dict]:

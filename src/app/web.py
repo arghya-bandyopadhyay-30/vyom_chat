@@ -15,29 +15,43 @@ class Web:
         self.llm_service = LLMService(llm_config, self.graph)
 
     def run(self):
-        st.set_page_config(page_title=self.page_title, page_icon=self.page_icon)
-        st.title(self.title)
-        st.subheader(self.subtitle)
+        self._initialize_ui()
 
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
+        self._display_messages()
+
+        if user_input := st.chat_input("Type your question here..."):
+            self._handle_user_input(user_input)
+
+    def _initialize_ui(self) -> None:
+        st.set_page_config(page_title=self.page_title, page_icon=self.page_icon)
+        st.title(self.title)
+        st.subheader(self.subtitle)
+        st.sidebar.title("")
+
+    def _display_messages(self) -> None:
         for msg in st.session_state.messages:
             st.chat_message(msg["role"]).write(msg["content"])
 
-        if user_input := st.chat_input("Type your question here..."):
-            st.session_state.messages.append({
-                "role": "user",
-                "content": user_input
-            })
-            st.chat_message("user").write(user_input)
+    def _handle_user_input(self, user_input: str) -> None:
+        st.session_state.messages.append({
+            "role": "user",
+            "content": user_input
+        })
+        st.chat_message("user").write(user_input)
 
+        with st.spinner("Generating response..."):
             response = self.llm_service.query(user_input)
             if response:
-                st.session_state["messages"].append({
-                    "role": "assistant",
-                    "content": response
-                })
+                self._add_message_to_session("assistant", response)
                 st.chat_message("assistant").write(response)
             else:
-                st.error("Vyom failed to get a valid response. Please try again.")
+                st.error("Vyom failed to get a valid response. Please try again later.")
+
+    def _add_message_to_session(self, role: str, content: str) -> None:
+        st.session_state.messages.append({
+            "role": role,
+            "content": content
+        })
