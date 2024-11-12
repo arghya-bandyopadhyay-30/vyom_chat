@@ -25,19 +25,19 @@ class Web:
         for msg in st.session_state.messages:
             st.chat_message(msg["role"]).write(msg["content"])
 
-        if prompt := st.chat_input("Type your question here..."):
+        if user_input := st.chat_input("Type your question here..."):
             st.session_state.messages.append({
                 "role": "user",
-                "content": prompt
+                "content": user_input
             })
-            st.chat_message("user").write(prompt)
+            st.chat_message("user").write(user_input)
 
-            response = self.llm_service.query(prompt)
-            if response and 'result' in response:
+            response = self.llm_service.query(user_input)
+            if response:
                 st.session_state["messages"].append({
                     "role": "assistant",
-                    "content": response['result']
+                    "content": response
                 })
-                st.chat_message("assistant").write(response['result'])
+                st.chat_message("assistant").write(response)
             else:
                 st.error("Vyom failed to get a valid response. Please try again.")
