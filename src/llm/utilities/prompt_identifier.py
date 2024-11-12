@@ -13,7 +13,6 @@ class PromptIdentifier:
                 1. Identify the correct entities (nodes) and relationships described in the user's question.
                 2. Construct Cypher queries that accurately map these relationships, ensuring correct syntax and structure.
                 3. Retrieve all relevant properties or fields needed to fully answer the question based on its context.
-                4. Generate detailed responses by providing extra context where useful, such as specific details about Arghya’s roles, achievements, or project objectives.
 
                 **Reference Entity and Relationship Mapping**:
                 - **Entities**:

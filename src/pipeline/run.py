@@ -12,7 +12,7 @@ async def run_task(config: Config):
     await loader.run()
 
     llm_service = LLMService(config.llm_config, config.ingestion_config.graph_client.graph)
-    await user_input(llm_service)
+    # await user_input(llm_service)
 
 async def user_input(llm_service):
     print("Welcome to Vyom! You can ask any question about Arghya. Type 'bye' or 'exit' to end the conversation.")

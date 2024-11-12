@@ -1,0 +1,11 @@
+app:
+  page_title: "Vyom - AI Assistant"
+  page_icon: "🧘‍♂️"
+  title: "Vyom - Arghya's Personal Assistant"
+  subtitle: "Ask me anything about Arghya Bandyopadhyay"
+  db_name: ${NEO4J_DATABASE}
+
+llm-model:
+  provider: ChatGroq
+  api-key: ${GROQ_API_KEY}
+  model: gemma2-9b-it
