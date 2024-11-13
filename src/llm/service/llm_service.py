@@ -47,14 +47,15 @@ class LLMService:
         except Exception as e:
             raise ValueError(f"Error initializing tools: {e}")
 
-    def __initialize_agent(self, tools: list[StructuredTool], examples: list[dict]) -> Any:
+    def __initialize_agent(self, tools: list[StructuredTool], prompt_template: Any) -> Any:
         try:
-            prompt_identifier = PromptIdentifier()
-            prompt_with_variables = prompt_identifier.get_prompt_template(examples).partial(
+            prompt_with_variables = prompt_template.partial(
                 tool_names=", ".join(tool.name for tool in tools),
                 agent_scratchpad="",
                 tools=", ".join(tool.name for tool in tools)
             )
+            print("Prompt sent to LLM:", prompt_with_variables.format(question=""))  # Debugging: Print prompt being used
+
             return create_structured_chat_agent(
                 llm=self.llm,
                 tools=tools,
@@ -74,6 +75,10 @@ class LLMService:
         response = self.llm.invoke([HumanMessage(content=classification_prompt)])
         return response.content.strip().lower()
 
+    def __get_prompt_template_with_examples(self, examples: list[dict]) -> Any:
+        prompt_identifier = PromptIdentifier()
+        return prompt_identifier.get_prompt_template(examples)
+
     def query(self, question: str) -> str:
         try:
             query_type = self.__classify_query(question)
@@ -84,8 +89,10 @@ class LLMService:
             elif query_type == ARGHYA_LABEL:
                 categories = self._classify_query_category(question)
                 filtered_examples = self.__filter_examples(categories)
+                print("Examples:", filtered_examples)
 
-                self.agent = self.__initialize_agent(self.tools, filtered_examples)
+                prompt_template = self.__get_prompt_template_with_examples(filtered_examples)
+                self.agent = self.__initialize_agent(self.tools, prompt_template)
                 self.agent_executor = self.__initialize_agent_executor(self.agent, self.tools)
 
                 return self.__generate_user_response(question)
@@ -156,4 +163,3 @@ class LLMService:
             filtered_examples.extend(blogs)
 
         return filtered_examples
-

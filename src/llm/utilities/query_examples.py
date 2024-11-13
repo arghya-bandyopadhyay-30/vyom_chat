@@ -6,12 +6,6 @@ person = [
         """
     },
     {
-        "question": "Who is Arghya Banerjee?",
-        "query": """
-            MATCH (p:person {{name: "Arghya Bandyopadhyay"}}) RETURN p
-        """
-    },
-    {
         "question": "Who is Arghya?",
         "query": """
             MATCH (p:person {{name: "Arghya Bandyopadhyay"}}) RETURN p
