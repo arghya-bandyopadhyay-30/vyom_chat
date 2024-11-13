@@ -7,7 +7,8 @@ from langchain_groq import ChatGroq
 from langchain.globals import set_verbose
 
 from src.llm.model.llm import LLMConfig
-from src.llm.tools.string_literals import VYOM_LABEL, ARGHYA_LABEL
+from src.llm.tools.string_literals import VYOM_LABEL, ARGHYA_LABEL, CATEGORY_IDENTIFIER_TEMPLATE, CLASSIFICATION_PROMPT, \
+    BOT_INTRODUCTION_PROMPT, FORMATTING_PROMPT
 from src.llm.utilities.prompt_identifier import PromptIdentifier
 from src.llm.tools.query_neo4j_tool import QueryNeo4jTool
 
@@ -66,17 +67,12 @@ class LLMService:
             raise ValueError(f"Error initializing agent executor: {e}")
 
     def __classify_query(self, question: str) -> str:
-        classification_prompt = f"""
-            You are an assistant designed to classify user queries. Please classify the following question as either:
-            - '{VYOM_LABEL}' if the question is directed towards you, Vyom, or is a general greeting.
-            - '{ARGHYA_LABEL}' if the question is directed towards Arghya Bandyopadhyay.
-
-            Question: "{question}"
-
-            Your classification should be either '{VYOM_LABEL}' or '{ARGHYA_LABEL}'.
-        """
+        classification_prompt = CLASSIFICATION_PROMPT.format(question=question)
         response = self.llm.invoke([HumanMessage(content=classification_prompt)])
         return response.content.strip().lower()
+
+    def _classify_query_category(self, query: str):
+        prompt = CATEGORY_IDENTIFIER_TEMPLATE.format(query=query)
 
     def query(self, question: str) -> str:
         try:
@@ -113,18 +109,7 @@ class LLMService:
 
     def __generate_bot_response(self, question: str) -> str:
         try:
-            introduction_prompt = f"""
-            You are Vyom, a virtual assistant created to assist users and provide information about Arghya Bandyopadhyay.
-            The user has asked: "{question}"
-
-            Based on the question, introduce yourself in a friendly and professional manner. Describe your role, your purpose, and your connection to Arghya Bandyopadhyay.
-            Be concise, helpful, and clear. Include:
-            - Your name (Vyom)
-            - Your purpose and connection to Arghya Bandyopadhyay
-            - How you can assist with questions or information.
-
-            Do not provide any unrelated information, and ensure your response is relevant to the user's question.
-            """
+            introduction_prompt = BOT_INTRODUCTION_PROMPT.format(question=question)
             response = self.llm.invoke([HumanMessage(content=introduction_prompt)])
             return response.content.strip()
         except Exception as e:
@@ -132,10 +117,7 @@ class LLMService:
 
     def __format_response(self, query_result: Any) -> str:
         try:
-            formatting_prompt = f"""
-                You are a helpful assistant. Here is the raw data retrieved from the database: {query_result}
-                Please convert this into a well-structured, human-readable response (and do not provide any additional suggestions).
-            """
+            formatting_prompt = FORMATTING_PROMPT.format(query_result=query_result)
             formatted_response = self.llm.invoke([HumanMessage(content=formatting_prompt)])
             return formatted_response.content.strip()
         except Exception as e:
