@@ -1,11 +1,11 @@
 import csv
 import requests
 
-from src.embedding.models.embedding import Embedding
-from src.embedding.service.embedding_service import EmbeddingService
 from src.ingestion.models.edges import Edge
 from src.ingestion.models.ingestion import Ingestion
 from src.ingestion.models.nodes import Node
+from src.ingestion.utiliies.load_the_content_from_link import load_the_content_from_link
+from src.ingestion.utiliies.sentiment_analysis import analyze_sentiment_vader
 from src.ingestion.utiliies.uuid_provider import UUIDProvider
 from src.utilities.string_literals import PERSON, PROJECTS, CERTIFICATION, EXPERIENCE, SKILLS
 
@@ -37,7 +37,18 @@ class Loader:
     def __extract_skills(self, skills_field: str) -> list[str]:
         return [skill.strip() for skill in skills_field.split("|") if skill.strip()]
 
+    def __extract_sentiment(self, node_type: str, row: dict) -> str:
+        if node_type == "recommendation":
+            content = row["message"]
+        elif node_type == "blog":
+            content = load_the_content_from_link(row["link"])
+
+        return analyze_sentiment_vader(content)
+
     def __create_nodes(self, node_type: str, row: dict) -> Node:
+        if node_type in ["recommendation", "blog"]:
+            row["sentiment"] = self.__extract_sentiment(node_type, row)
+
         skills = self.__extract_skills(row.get("skills", ""))
         self.unique_skills.update(skills)
 
