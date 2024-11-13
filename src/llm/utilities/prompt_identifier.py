@@ -1,6 +1,5 @@
 from langchain_core.prompts import PromptTemplate, FewShotPromptTemplate
-from src.llm.utilities.query_examples import examples
-from src.llm.tools.string_literals import PREFIX_TEXT, SUFFIX_TEXT, EXAMPLE_PROMPT_TEMPLATE
+from src.utilities.string_literals import PREFIX_TEXT, SUFFIX_TEXT, EXAMPLE_PROMPT_TEMPLATE
 
 class PromptIdentifier:
     def __init__(self):
@@ -8,7 +7,7 @@ class PromptIdentifier:
         self.prefix = PREFIX_TEXT
         self.suffix = SUFFIX_TEXT
 
-    def get_prompt_template(self):
+    def get_prompt_template(self, examples):
         return FewShotPromptTemplate(
             examples=examples,
             example_prompt=self.example_prompt,
@@ -16,5 +15,3 @@ class PromptIdentifier:
             suffix=self.suffix,
             input_variables=["question", "tool_names", "agent_scratchpad", "tools"]
         )
-
-    

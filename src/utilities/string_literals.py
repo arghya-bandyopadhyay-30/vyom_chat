@@ -1,5 +1,16 @@
-VYOM_LABEL = "vyom"
+PERSON = "person"
+EDUCATION = "education"
+EXPERIENCE = "experience"
+SKILLS = "skills"
+CERTIFICATION = "certification"
+LANGUAGE = "language"
+PROJECTS = "projects"
+HONOUR_AND_AWARD = "honours_and_awards"
+HONOUR_AND_AWARD_WITHOUT_UNDERSCORE = "honours and awards"
+RECOMMENDATIONS = "recommendations"
+BLOG = "blogs"
 
+VYOM_LABEL = "vyom"
 ARGHYA_LABEL = "arghya"
 
 EXAMPLE_PROMPT_TEMPLATE = "User input: {question}\nCypher query: {query}"
@@ -60,11 +71,9 @@ Given the following categories:
 - Recommendations: Questions about recommendations given to Arghya.
 - Blogs: Questions related to blogs authored by Arghya.
 
-Your task is to classify the following query into one or more of the above categories.
-
-Query: "{query}"
-
-Please provide the category or categories to which the query belongs.
+"Please classify the following query into one or more categories. "
+"Respond with only the category names, separated by commas. "
+"Query: '{query}'"
 """
 
 FORMATTING_PROMPT = """
