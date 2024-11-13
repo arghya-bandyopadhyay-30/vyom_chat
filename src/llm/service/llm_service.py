@@ -4,7 +4,6 @@ from langchain_community.graphs import Neo4jGraph
 from langchain.schema import HumanMessage
 from langchain_core.tools import StructuredTool
 from langchain_groq import ChatGroq
-from langchain.globals import set_verbose
 
 from src.llm.model.llm import LLMConfig
 from src.utilities.string_literals import VYOM_LABEL, ARGHYA_LABEL, CATEGORY_IDENTIFIER_TEMPLATE, CLASSIFICATION_PROMPT, \
@@ -19,7 +18,6 @@ from src.llm.utilities.query_examples import person, education, experience, skil
 class LLMService:
     def __init__(self, llm_config: LLMConfig, graph_client: Neo4jGraph):
         try:
-            set_verbose(True)
             self.llm = self.__initialize_llm(llm_config)
             self.query_tool = QueryNeo4jTool(graph_client)
 
@@ -89,7 +87,6 @@ class LLMService:
             elif query_type == ARGHYA_LABEL:
                 categories = self._classify_query_category(question)
                 filtered_examples = self.__filter_examples(categories)
-                print("Examples:", filtered_examples)
 
                 prompt_template = self.__get_prompt_template_with_examples(filtered_examples)
                 self.agent = self.__initialize_agent(self.tools, prompt_template)

@@ -26,16 +26,21 @@ class WebApp:
 
         self._display_messages()
 
-        if user_input := st.chat_input("Type your question here..."):
+        self._display_faqs()
+
+        if user_input := st.chat_input("💬 Curious about Arghya? Ask away! I'm ready to help. 🤓"):
             self._handle_user_input(user_input)
 
     def _initialize_ui(self) -> None:
         st.set_page_config(page_title=self.page_title, page_icon=self.page_icon)
         st.title(self.title)
         st.subheader(self.subtitle)
+
         st.sidebar.title("Chat Options")
         if st.sidebar.button("New Chat"):
             self.__start_new_chat()
+
+        st.sidebar.subheader("FAQs")
 
     def __start_new_chat(self):
         st.session_state.session_id = str(UUIDProvider.generate_id())
@@ -45,6 +50,19 @@ class WebApp:
         for msg in st.session_state.messages:
             st.chat_message(msg["role"]).write(msg["content"])
 
+    def _display_faqs(self):
+        faq_queries = [
+            "Who is Arghya Bandyopadhyay?",
+            "What is Arghya's current role?",
+            "Which certifications did Arghya achieve in 2024?",
+            "What is Arghya's role at Thoughtworks?",
+            "What certifications does Arghya hold?",
+            "What skills does Arghya have from his time at Thoughtworks?"
+        ]
+        for query in faq_queries:
+            if st.sidebar.button(query):
+                self._handle_user_input(query)
+
     def _handle_user_input(self, user_input: str) -> None:
         st.session_state.messages.append({
             "role": "user",
@@ -52,7 +70,7 @@ class WebApp:
         })
         st.chat_message("user").write(user_input)
 
-        with st.spinner("Generating response..."):
+        with st.spinner("🍳 Wait, we are cooking your response... 🔄"):
             response = self.llm_service.query(user_input)
             if response:
                 self._add_message_to_session("assistant", response)

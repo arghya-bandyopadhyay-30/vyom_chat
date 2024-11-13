@@ -87,7 +87,7 @@ experience = [
         """
     },
     {
-        "question": "What was Arghya's role at Thoughtworks?",
+        "question": "What is Arghya's role at Thoughtworks?",
         "query": """
             MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_EXPERIENCE]->(exp:experience {{organisation_name: "Thoughtworks"}}) RETURN exp.title, exp.skills
         """

@@ -78,5 +78,9 @@ Given the following categories:
 
 FORMATTING_PROMPT = """
 You are a helpful assistant. Here is the raw data retrieved from the database: {query_result}
-Please convert this into a well-structured, human-readable response (and do not provide any additional suggestions).
+Please convert this into a well-structured, human-readable response (and do not provide any additional suggestions). Make sure to add appropriate emojis to make the response more engaging and friendly.
+
+If the information is unavailable (e.g., the result is empty or contains no relevant data), respond something like:
+"⚠️ I'm sorry, but it seems that the information you're looking for is currently unavailable. ❌ 
+Please try asking about something else or provide more details so that I can assist you better. 😊"
 """
