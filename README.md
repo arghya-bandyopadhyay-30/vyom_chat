@@ -6,6 +6,7 @@ Vyom is a personal assistant chatbot built to answer questions about Arghya Band
 2. [Features](#features)
 3. [Architecture](#architecture)
 4. [Flow Diagram](#flow-diagram)
+5. [Screenshot](#screenshot)
 5. [Installation](#installation)
 6. [Usage](#usage)
 7. [Technologies Used](#technologies-used)
@@ -36,6 +37,10 @@ Vyom follows a modular architecture:
 2. Queries are processed by the LLM to classify, fetch data, or generate responses.
 3. Data is retrieved from Neo4j using Cypher queries.
 4. The response is formatted and sent back to the user through the chat UI.
+
+## Screenshot
+
+![Sample Image](image/screenshot.png)
 
 ## Installation
 

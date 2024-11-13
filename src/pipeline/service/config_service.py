@@ -2,9 +2,7 @@ import os
 import yaml
 from dotenv import load_dotenv
 
-from src.embedding.models.embedding import Embedding
 from src.ingestion.models.ingestion import Ingestion
-from src.llm.model.llm import LLMConfig
 from src.pipeline.model.config import Config
 
 
@@ -37,7 +35,5 @@ class ConfigService:
             raise ValueError("LLM configuration is required in config.yml")
 
         ingestion = Ingestion.from_dict(config_data["ingestion"])
-        embedding = Embedding.from_dict(config_data["embedding-model"])
-        llm = LLMConfig.from_dict(config_data["llm-model"])
 
-        return Config(ingestion_config=ingestion, embedding_config=embedding, llm_config=llm)
+        return Config(ingestion_config=ingestion)
