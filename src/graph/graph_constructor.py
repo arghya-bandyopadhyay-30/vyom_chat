@@ -1,6 +1,6 @@
 import os
 
-from src.ingestion.graph.graph_client import GraphClient
+from src.graph.graph_client import GraphClient
 
 class GraphClientBuilder:
     def __init__(self, db_name = "neo4j"):

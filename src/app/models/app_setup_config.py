@@ -1,6 +1,6 @@
 from langchain_community.graphs import Neo4jGraph
 
-from src.ingestion.graph.graph_constructor import GraphClientBuilder
+from src.graph.graph_constructor import GraphClientBuilder
 
 
 class AppSetupConfig:

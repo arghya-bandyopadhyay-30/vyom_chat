@@ -3,9 +3,10 @@ import streamlit as st
 from src.app.models.app_setup_config import AppSetupConfig
 from src.llm.model.llm import LLMConfig
 from src.llm.service.llm_service import LLMService
+from src.utilities.uuid_provider import UUIDProvider
 
 
-class Web:
+class WebApp:
     def __init__(self, app_config: AppSetupConfig, llm_config: LLMConfig):
         self.page_title = app_config.page_title
         self.page_icon = app_config.page_icon
@@ -15,6 +16,9 @@ class Web:
         self.llm_service = LLMService(llm_config, self.graph)
 
     def run(self):
+        if "session_id" not in st.session_state:
+            self.__start_new_chat()
+
         self._initialize_ui()
 
         if "messages" not in st.session_state:
@@ -29,7 +33,13 @@ class Web:
         st.set_page_config(page_title=self.page_title, page_icon=self.page_icon)
         st.title(self.title)
         st.subheader(self.subtitle)
-        st.sidebar.title("")
+        st.sidebar.title("Chat Options")
+        if st.sidebar.button("New Chat"):
+            self.__start_new_chat()
+
+    def __start_new_chat(self):
+        st.session_state.session_id = str(UUIDProvider.generate_id())
+        st.session_state.messages = []
 
     def _display_messages(self) -> None:
         for msg in st.session_state.messages:

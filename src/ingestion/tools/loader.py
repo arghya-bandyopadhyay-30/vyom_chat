@@ -6,7 +6,7 @@ from src.ingestion.models.ingestion import Ingestion
 from src.ingestion.models.nodes import Node
 from src.ingestion.utiliies.load_the_content_from_link import load_the_content_from_link
 from src.ingestion.utiliies.sentiment_analysis import analyze_sentiment_vader
-from src.ingestion.utiliies.uuid_provider import UUIDProvider
+from src.utilities.uuid_provider import UUIDProvider
 from src.utilities.string_literals import PERSON, PROJECTS, CERTIFICATION, EXPERIENCE, SKILLS
 
 
