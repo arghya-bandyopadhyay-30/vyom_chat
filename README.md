@@ -66,7 +66,10 @@ conda activate
 ```
 pip install -r requirements.txt
 ```
-4. Set up Neo4j and copy the [env_template](.env_template) file and rename it to .env and update the file with your credentials.
+4. Set up Neo4j and copy the [env_template](.env_template) file and rename it to `.env` and update the file with your credentials.
+
+#### CSV Template Setup: 
+We have provided CSV templates in the folder: [model_csv_templates](model_csv_templates). Download these files and import them into Google Sheets. Use the public share link in the `.env` file.
 
 ## Usage
 
