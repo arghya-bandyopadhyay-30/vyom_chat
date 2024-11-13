@@ -7,6 +7,8 @@ from src.ingestion.models.edges import Edge
 from src.ingestion.models.ingestion import Ingestion
 from src.ingestion.models.nodes import Node
 from src.ingestion.utiliies.uuid_provider import UUIDProvider
+from src.utilities.string_literals import PERSON, PROJECTS, CERTIFICATION, EXPERIENCE, SKILLS
+
 
 class Loader:
     def __init__(self, ingestion_config: Ingestion):
@@ -45,7 +47,7 @@ class Loader:
             parameters=row
         )
 
-        if node_type == "person" and not self.person_node:
+        if node_type == PERSON and not self.person_node:
             self.person_node = node
 
         return node
@@ -57,7 +59,7 @@ class Loader:
         edges = []
 
         for node in nodes:
-            if node.node_type == "person":
+            if node.node_type == PERSON:
                 continue
 
             relationship_type = self.relationship_mapping.get(node.node_type)
@@ -67,7 +69,7 @@ class Loader:
                 relationship_type=relationship_type
             ))
 
-            if node.node_type in {"experience", "projects", "certifications"}:
+            if node.node_type in {EXPERIENCE, PROJECTS, CERTIFICATION}:
                 edges.extend(self.__create_skill_edges(node))
 
         return edges
@@ -75,14 +77,14 @@ class Loader:
     def __create_skill_nodes(self) -> list[Node]:
         for skill in self.unique_skills:
             if skill not in self.skill_nodes:
-                skill_node = self.__create_nodes("skills", {'name': skill})
+                skill_node = self.__create_nodes(SKILLS, {'name': skill})
                 self.skill_nodes[skill] = skill_node
 
         return list(self.skill_nodes.values())
 
     def __create_skill_edges(self, node: Node) -> list[Edge]:
         skill_edges = []
-        skills = self.__extract_skills(node.parameters.pop("skills", ""))
+        skills = self.__extract_skills(node.parameters.pop(SKILLS, ""))
 
         for skill in skills:
             skill_node = self.skill_nodes.get(skill)
