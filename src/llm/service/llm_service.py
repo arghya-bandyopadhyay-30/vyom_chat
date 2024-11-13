@@ -13,7 +13,7 @@ from src.utilities.string_literals import VYOM_LABEL, ARGHYA_LABEL, CATEGORY_IDE
 from src.llm.utilities.prompt_identifier import PromptIdentifier
 from src.llm.tools.query_neo4j_tool import QueryNeo4jTool
 from src.llm.utilities.query_examples import person, education, experience, skills, certificate, language, projects, \
-    honours_and_awards, recommendations, blogs
+    honours_and_awards, recommendation, blogs
 
 
 class LLMService:
@@ -151,7 +151,7 @@ class LLMService:
         if HONOUR_AND_AWARD_WITHOUT_UNDERSCORE in categories:
             filtered_examples.extend(honours_and_awards)
         if RECOMMENDATIONS in categories:
-            filtered_examples.extend(recommendations)
+            filtered_examples.extend(recommendation)
         if BLOG in categories:
             filtered_examples.extend(blogs)
 

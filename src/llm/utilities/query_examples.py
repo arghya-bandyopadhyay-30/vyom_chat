@@ -370,23 +370,23 @@ honours_and_awards = [
     },
 ]
 
-recommendations = [
+recommendation = [
 {
         "question": "Who recommended Arghya and what did they say?",
         "query": """
-            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_RECOMMENDATION]->(rec:recommendations) RETURN rec.recommender_name, rec.message
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_RECOMMENDATION]->(rec:recommendation) RETURN rec.recommender_name, rec.message
         """
     },
     {
-        "question": "Has Arghya received any recommendations for teamwork?",
+        "question": "Has Arghya received any recommendation for teamwork?",
         "query": """
-            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_RECOMMENDATION]->(rec:recommendations) WHERE rec.message CONTAINS "teamwork" RETURN rec.recommender_name, rec.message
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_RECOMMENDATION]->(rec:recommendation) WHERE rec.message CONTAINS "teamwork" RETURN rec.recommender_name, rec.message
         """
     },
     {
-        "question": "List all the positive recommendations Arghya received.",
+        "question": "List all the positive recommendation Arghya received.",
         "query": """
-            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_RECOMMENDATION]->(rec:recommendations)
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_RECOMMENDATION]->(rec:recommendation)
             WHERE rec.sentiment = "positive"
             RETURN rec.recommender_name, rec.message
         """
