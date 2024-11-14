@@ -28,12 +28,6 @@ class ConfigService:
         if "ingestion" not in config_data:
             raise ValueError("Ingestion configuration is required in config.yml")
 
-        if "embedding-model" not in config_data:
-            raise ValueError("Embedding configuration is required in config.yml")
-
-        if "llm-model" not in config_data:
-            raise ValueError("LLM configuration is required in config.yml")
-
         ingestion = Ingestion.from_dict(config_data["ingestion"])
 
         return Config(ingestion_config=ingestion)

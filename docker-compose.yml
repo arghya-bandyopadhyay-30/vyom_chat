@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:4.4.38-community
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    env_file:
+      - .env
+    environment:
+      - NEO4J_AUTH=${NEO4J_USERNAME}/${NEO4J_PASSWORD}
+
+  app:
+    build:
+      context: .
+    ports:
+      - "8502:8502"
+    depends_on:
+      - neo4j
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
+    working_dir: /app
+    command: ["sh", "./start_app.sh"]
+
+volumes:
+  neo4j_data:
