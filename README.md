@@ -74,18 +74,25 @@ We have provided CSV templates in the folder: [model_csv_templates](model_csv_te
 ## Usage
 
 1. Run the Neo4j database and ensure it is populated with the initial data.
-2. Ingest the nodes:
-```
-python src/pipeline/run.py config.yml 
-```
-3. Start the Streamlit application:
-```
-streamlit run src/app/web_app.py
-```
-4. Use the chat interface to ask questions like:
+2. Run the application using either of the following methods:
+   1. **Option A - Manual Steps:**
+      1. Ingest the nodes:
+      ```
+      python src/pipeline/run.py config.yml 
+      ```
+      2. Start the Streamlit application:
+      ```
+      streamlit run src/app/web_app.py
+      ```
+   2. **Option B: All-in-One Script:**
+      1. Use the provided script to run both ingestion and start the Streamlit app:
+      ```
+      sh ./start_app.sh
+      ```
+3. Use the chat interface to ask questions like:
    1. _"Who is Arghya Bandyopadhyay?"_
    2. _"What projects has Arghya worked on?"_
-5. Click on "New Chat" in the sidebar to begin a new conversation.
+4. Click on "New Chat" in the sidebar to begin a new conversation.
 
 ## Technologies Used
 
