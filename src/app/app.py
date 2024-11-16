@@ -1,6 +1,8 @@
-import asyncio
+import os
+import sys
 
-from src.app.models.app_config import AppConfig
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 from src.app.service.app_service import AppService
 from src.app.webapp import WebApp
 
