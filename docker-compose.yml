@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: vyom_chatbot_app
+    ports:
+      - "8502:8502"
+    environment:
+      - NEO4J_URI=neo4j+s://56e8977d.databases.neo4j.io
+      - NEO4J_USERNAME=neo4j
+      - NEO4J_PASSWORD=TrAVD5PRwy4vA4_t8rI8QxyJx_9HlYRjxWLT89vtD6M
+      - NEO4J_DATABASE=neo4j
+      - GROQ_API_KEY=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
+      - PERSON_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=0#gid=0
+      - EDUCATION_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=519193430#gid=519193430
+      - EXPERIENCE_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=1501529565#gid=1501529565
+      - LANGUAGE_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=219896195#gid=219896195
+      - HONOUR_AND_AWARDS_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=838216147#gid=838216147
+      - RECOMMENDATION_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=1010952710#gid=1010952710
+      - BLOG_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=365880568#gid=365880568
+      - PROJECT_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=1320547828#gid=1320547828
+      - CERTIFICATION_URL=https://docs.google.com/spreadsheets/d/1BmHkoa79tM93eDIhcA4i-T8zll1wZd-Id6rbCPNVSNQ/edit?pli=1&gid=2024776655#gid=2024776655
+    volumes:
+      - .:/app
+    command: ["sh", "start_app.sh"]
