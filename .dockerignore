@@ -1,0 +1,27 @@
+# Ignore Python cache and compiled bytecode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore system files
+.DS_Store
+*.swp
+
+# Ignore environment configuration
+.env
+
+# Ignore virtual environments
+venv/
+.env/
+*.env
+
+# Ignore Git files
+.git
+.gitignore
+
+# Ignore unnecessary project files
+tests/
+docs/
+*.log
+*.tmp
