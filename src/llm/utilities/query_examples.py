@@ -52,6 +52,12 @@ education = [
         """
     },
     {
+        "question": "What subjects did Arghya study during his 12?",
+        "query": """
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_EDUCATION]->(e:education {{degree: "10+2 CBSE"}}) RETURN e.field_of_study
+        """
+    },
+    {
         "question": "What grades did Arghya achieve in his education?",
         "query": """
             MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_EDUCATION]->(e:education) RETURN e.institute, e.degree, e.grade
