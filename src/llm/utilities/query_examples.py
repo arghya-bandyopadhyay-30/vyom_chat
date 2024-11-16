@@ -362,7 +362,7 @@ honours_and_awards = [
             RETURN h.title, h.associate_with, h.issue_date
         """
     },
-{
+    {
         "question": "What awards did Arghya receive before 2023?",
         "query": """
             MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:RECEIVED_AWARD]->(h:honour_and_awards)
