@@ -73,26 +73,46 @@ We have provided CSV templates in the folder: [model_csv_templates](model_csv_te
 
 ## Usage
 
-1. Run the Neo4j database and ensure it is populated with the initial data.
-2. Run the application using either of the following methods:
-   1. **Option A - Manual Steps:**
-      1. Ingest the nodes:
-      ```
-      python src/pipeline/run.py config.yml 
-      ```
-      2. Start the Streamlit application:
-      ```
-      streamlit run src/app/web_app.py
-      ```
-   2. **Option B: All-in-One Script:**
-      1. Use the provided script to run both ingestion and start the Streamlit app:
-      ```
-      sh ./start_app.sh
-      ```
-3. Use the chat interface to ask questions like:
-   1. _"Who is Arghya Bandyopadhyay?"_
-   2. _"What projects has Arghya worked on?"_
-4. Click on "New Chat" in the sidebar to begin a new conversation.
+Run the application using either Docker or local methods:
+
+### Option A - Docker Setup:
+
+1. Ensure Docker is installed and running on your machine.
+2. Build and run the Docker container:
+   ```sh
+   docker-compose down --remove-orphans
+   docker-compose up --build
+   ```
+3. Once the container is running, access the Streamlit application at `http://localhost:8502`.
+
+### Option B - Manual Steps:
+
+1. **Run the Neo4j database and ensure it is populated with the initial data.**
+
+2. **Ingest the nodes:**
+   ```sh
+   python src/pipeline/run.py config.yml
+   ```
+
+3. **Start the Streamlit application:**
+   ```sh
+   streamlit run src/app/web_app.py
+   ```
+
+### Option C - All-in-One Script:
+
+1. **Use the provided script to run both ingestion and start the Streamlit app:**
+   ```sh
+   sh ./start_app.sh
+   ```
+
+### Using the Chat Interface
+
+1. Use the chat interface to ask questions like:
+  - _"Who is Arghya Bandyopadhyay?"_
+  - _"What projects has Arghya worked on?"_
+2. Click on "New Chat" in the sidebar to begin a new conversation.
+
 
 ## Technologies Used
 
