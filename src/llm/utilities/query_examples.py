@@ -362,6 +362,35 @@ honours_and_awards = [
             RETURN h.title, h.associate_with, h.issue_date
         """
     },
+{
+        "question": "What awards did Arghya receive before 2023?",
+        "query": """
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:RECEIVED_AWARD]->(h:honour_and_awards)
+            WHERE h.issue_date IS NOT NULL AND h.issue_date <> ""
+            WITH h, apoc.date.parse(h.issue_date, 'ms', 'MMMM yyyy') AS parsed_date
+            WHERE parsed_date < apoc.date.parse("January 2023", 'ms', 'MMMM yyyy')
+            RETURN h.title, h.associate_with, h.issue_date
+        """
+    },
+    {
+        "question": "What awards did Arghya receive in 2022?",
+        "query": """
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:RECEIVED_AWARD]->(h:honour_and_awards)
+            WHERE h.issue_date IS NOT NULL AND h.issue_date <> "" AND h.issue_date CONTAINS "2022"
+            RETURN h.title, h.associate_with, h.issue_date
+        """
+    },
+    {
+        "question": "What awards did Arghya receive from 2021 to 2023?",
+        "query": """
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:RECEIVED_AWARD]->(h:honour_and_awards)
+            WHERE h.issue_date IS NOT NULL AND h.issue_date <> ""
+            WITH h, apoc.date.parse(h.issue_date, 'ms', 'MMMM yyyy') AS parsed_date
+            WHERE parsed_date >= apoc.date.parse("January 2021", 'ms', 'MMMM yyyy') AND
+                  parsed_date <= apoc.date.parse("December 2023", 'ms', 'MMMM yyyy')
+            RETURN h.title, h.associate_with, h.issue_date
+        """
+    }
 ]
 
 recommendation = [
