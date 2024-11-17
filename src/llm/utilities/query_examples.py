@@ -64,6 +64,12 @@ education = [
         """
     },
     {
+        "question": "What results did Arghya achieve in his education?",
+        "query": """
+            MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_EDUCATION]->(e:education) RETURN e.institute, e.degree, e.grade
+        """
+    },
+    {
         "question": "What are all the degrees Arghya has completed, ordered by year?",
         "query": """
             MATCH (p:person {{name: "Arghya Bandyopadhyay"}})-[:HAS_EDUCATION]->(e:education)
