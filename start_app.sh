@@ -1,4 +1,5 @@
 #!/bin/sh
+
 export PYTHONPATH=$PYTHONPATH:/app
 
 echo "Starting data ingestion with config.yml..."
