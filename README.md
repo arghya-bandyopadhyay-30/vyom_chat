@@ -1,6 +1,9 @@
 # Vyom Chatbot
 Vyom is a personal assistant chatbot built to answer questions about Arghya Bandyopadhyay. It uses a combination of Neo4j for knowledge graph management, Streamlit for frontend interface, and a language model for intelligent query handling.
 
+## Live Demo
+**You can interact with the live version of Vyom Chatbot here:** [Vyom Chatbot App](https://vyom-chatbot-app.onrender.com)
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Features](#features)
@@ -52,63 +55,69 @@ Vyom follows a modular architecture:
 
 ### Steps
 
-1. Clone the repository:
-```
-https://github.com/ArghyaBanerjee30/vyom_my_bot.git
+1. **Clone the repository:**
+```sh
+git clone https://github.com/ArghyaBanerjee30/vyom_my_bot.git
 cd vyom-chatbot
 ```
-2. Set up a virtual environment and activate it:
-```
+2. **Set up a virtual environment and activate it:**
+```sh
 conda create -p ./venv python==3.11 -y   
 conda activate 
 ```
-3. Install the required dependencies:
-```
-pip install -r requirements.txt
-```
-4. Set up Neo4j and copy the [env_template](.env_template) file and rename it to `.env` and update the file with your credentials.
-
-#### CSV Template Setup: 
-We have provided CSV templates in the folder: [model_csv_templates](model_csv_templates). Download these files and import them into Google Sheets. Use the public share link in the `.env` file.
+3. **CSV Template Setup:** 
+   1. We have provided CSV templates in the folder: [model_csv_templates](model_csv_templates). Download these files and import them into Google Sheets. 
+   2. Use the public share link in the `.env` file.
 
 ## Usage
 
-Run the application using either Docker or local methods:
+Run the application using either **Docker** or **local methods**:
 
 ### Option A - Docker Setup:
 
-1. Ensure Docker is installed and running on your machine.
-2. Build and run the Docker container:
-   ```sh
-   docker-compose down --remove-orphans
-   docker-compose up --build
-   ```
-3. Once the container is running, access the Streamlit application at `http://localhost:8502`.
+1. **Ensure Docker is installed** and **running** on your machine.
+2. **Pull the Docker image from Docker Hub:**
+```sh
+docker pull arghya30/vyom_chat:latest
+```
+3. **Build and run the Docker container:**
+```sh
+docker-compose down --remove-orphans
+docker-compose up --build
+```
+3. **Access the Streamlit application:** Once the container is running, access the Streamlit application at `http://localhost:8502`.
 
 ### Option B - Manual Steps:
 
-1. **Run the Neo4j database and ensure it is populated with the initial data.**
-
-2. **Ingest the nodes:**
-   ```sh
-   python src/pipeline/run.py config.yml
-   ```
-
-3. **Start the Streamlit application:**
-   ```sh
-   streamlit run src/app/web_app.py
-   ```
+1. **Install the required dependencies:**
+```sh
+pip install -r requirements.txt
+```
+2. Set up Neo4j and copy the [env_template](.env_template) file and rename it to `.env` and update the file with your credentials.
+3. **Ingest the nodes:**
+```sh
+python src/pipeline/run.py config.yml
+```
+4. **Start the Streamlit application:**
+```sh
+streamlit run src/app/web_app.py
+```
 
 ### Option C - All-in-One Script:
 
-1. **Use the provided script to run both ingestion and start the Streamlit app:**
-   ```sh
-   sh ./start_app.sh
-   ```
+1. **Install the required dependencies:**
+```sh
+pip install -r requirements.txt
+```
+2. Set up Neo4j and copy the [env_template](.env_template) file and rename it to `.env` and update the file with your credentials.
+3. **Use the provided script to run both ingestion and start the Streamlit app:**
+```sh
+sh ./start_app.sh
+```
 
 ### Using the Chat Interface
 
-1. Use the chat interface to ask questions like:
+1. **Use the chat interface to ask questions like:**
   - _"Who is Arghya Bandyopadhyay?"_
   - _"What projects has Arghya worked on?"_
 2. Click on "New Chat" in the sidebar to begin a new conversation.
