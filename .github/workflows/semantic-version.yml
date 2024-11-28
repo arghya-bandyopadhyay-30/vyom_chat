@@ -1,51 +1,171 @@
-name: Semantic Versioning
+name: Versioning Workflow
 
 on:
   push:
-    branches:
-      - main
+   branches:
+     - main
+  workflow_dispatch:
 
-permissions:
-  contents: write
+concurrency:
+  group: versioning-workflow-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   versioning:
     runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_run' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/${{ github.event.inputs.branch }}')
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up semantic versioning
-        id: version_bump
-        uses: paulhatch/semantic-version@v5.4.0
-        with:
-          tag_prefix: "v"
-          major_pattern: "(MAJOR)"
-          minor_pattern: "(MINOR)"
-          bump_each_commit: false
-          version_format: "${major}.${minor}.${patch}"
-          debug: true
-          search_commit_body: true
-
-      - name: Check commit message for tag or release
-        id: tag_release_check
+      - name: Set Git user identity
         run: |
-          if [[ "${{ github.event.head_commit.message }}" == *"tag"* ]]; then
-            echo "Creating a new tag"
-            echo "TAG=true" >> $GITHUB_ENV
-          else
-            echo "No tag to create"
-            echo "TAG=false" >> $GITHUB_ENV
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions-bot@users.noreply.github.com"
+
+      - name: Get latest existing tag
+        id: get_latest_tag
+        run: |
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1` || echo "none")
+          echo "Latest tag: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
+      # TAG Implementations
+      - name: Setup git-mkver
+        uses: cperezabo/setup-git-mkver@v1
+        with:
+          version: "1.2.0"
+
+      - name: Ensure mkver.conf exists
+        run: |
+          if [ ! -f mkver.conf ]; then
+            echo "mkver.conf not found in root directory!"
+            exit 1
           fi
 
-      - name: Create Git tag
-        if: env.TAG == 'true'
+      - name: Fetch all tags
+        run: |
+          git fetch --tags
+
+      - name: Print mkver.conf contents
+        run: |
+          cat "$(pwd)/mkver.conf"
+
+      - name: Look for "{tag}" in commit messages
+        id: check_for_tag_keyword
+        run: |
+          last_commit=$(git log -1 --pretty=format:"%s%b" | sed -E "s/[=%\\]/\\\\&/g")
+
+          echo "Commit messages: $last_commit"
+
+          if echo "$last_commit" | grep -qi '{tag}'; then
+            echo "TAG_KEYWORD_FOUND=true" >> $GITHUB_ENV
+          else
+            echo "TAG_KEYWORD_FOUND=false" >> $GITHUB_ENV
+          fi
+
+      - name: Calculate next version with git-mkver
+        id: calculate_version
+        if: env.LATEST_TAG != 'none'
+        run: |
+          echo "$(pwd)/mkver.conf"
+          echo "GITMKVER_CONFIG=$(pwd)/mkver.conf" >> $GITHUB_ENV
+          NEXT_VERSION=$(git mkver -c "$(pwd)/mkver.conf" next --tag-prefix)
+          echo "Next version: $NEXT_VERSION"
+          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
+
+      - name: Set initial version to 1.0.0 if no tag exists
+        if: env.LATEST_TAG == 'none'
+        run: |
+          echo "No existing tag found. Setting initial version to v1.0.0."
+          NEXT_VERSION="v1.0.0"
+          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
+
+      - name: Compare versions and create tag if {tag} is found
+        if: env.LATEST_TAG != 'none' && env.TAG_KEYWORD_FOUND == 'true' && env.LATEST_TAG != env.NEXT_VERSION
+        run: |
+          echo "Existing version: $LATEST_TAG"
+          echo "Calculated version: ${{ env.NEXT_VERSION }}"
+
+          if [ "$LATEST_TAG" = "${{ env.NEXT_VERSION }}" ]; then
+            echo "Version ${{ env.NEXT_VERSION }} already exists. Skipping tagging."
+          else
+            echo "Tagging new version: ${{ env.NEXT_VERSION }}"
+            git tag ${{ env.NEXT_VERSION }}
+            git push origin --tags
+          fi
+
+      - name: Tag if no previous tag exists
+        if: env.LATEST_TAG == 'none' && env.TAG_KEYWORD_FOUND == 'true'
+        run: |
+          echo "No existing tag found. Tagging version ${{ env.NEXT_VERSION }}."
+          git tag ${{ env.NEXT_VERSION }}
+          git push origin --tags
+
+      - name: Skip tagging if {tag} not found
+        if: env.TAG_KEYWORD_FOUND == 'false'
+        run: |
+          echo "No {tag} keyword found in commit messages. Skipping tagging."
+
+      # CHANGELOG.md Implementations
+      - name: Install git-cliff
+        run: |
+            npm install -g git-cliff
+
+      - name: Generate Changelog Notes using git-cliff
+        if: env.TAG_KEYWORD_FOUND == 'true'
+        id: generate_changelog
+        run: |
+          git-cliff --output CHANGELOG.md --tag ${{ env.NEXT_VERSION }}
+
+      - name: Commit and push changelog update
+        if: env.TAG_KEYWORD_FOUND == 'true'
+        run: |
+          git add CHANGELOG.md
+          git commit -m "docs: update CHANGELOG.md for ${{ env.NEXT_VERSION }} [skip ci]"
+          git push origin main
+
+      # RELEASE Implementations
+      - name: Generate Release Notes
+        id: generate_release_notes
+        if: env.TAG_KEYWORD_FOUND == 'true'
+        run: |
+          if [ "$LATEST_TAG" == "none" ]; then
+            echo "No previous tag found. Generating release notes for the entire history."
+            release_changes="## No previous tag found. Generating release notes for the entire history."
+            release_notes=$(git log --oneline --no-merges)
+            contributors=$(git log --format='%aN' | sort | uniq | grep -v 'github-actions\[bot\]')
+          else
+            echo "Generating release notes between $LATEST_TAG and ${{ env.NEXT_VERSION }}."
+            release_changes="## Generating release notes between **${LATEST_TAG}** and **${{ env.NEXT_VERSION }}**."
+            release_notes=$(git log $LATEST_TAG..${{ env.NEXT_VERSION }} --oneline --no-merges)
+            contributors=$(git log $LATEST_TAG..${{ env.NEXT_VERSION }} --format='%aN' | sort | uniq | grep -v 'github-actions\[bot\]')
+          fi
+
+          changelog_link="[View the full CHANGELOG](https://github.com/${{ github.repository }}/blob/${{ github.ref }}/CHANGELOG.md)"
+          combined_notes="${release_changes}\n\n### Commits:\n${release_notes}\n\n## Contributors:\n${contributors}\n\n## Full Changelog:\n${changelog_link}"
+
+          echo -e "Release Notes:\n$combined_notes"
+
+          {
+            echo "RELEASE_NOTES<<EOF"
+            echo -e "$combined_notes"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        if: env.TAG_KEYWORD_FOUND == 'true'
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a ${{ steps.version_bump.outputs.version_tag }} -m "Release version ${{ steps.version_bump.outputs.version_tag }}"
-          git push origin ${{ steps.version_bump.outputs.version_tag }}
+        with:
+          tag_name: ${{ env.NEXT_VERSION }}
+          name: Release ${{ env.NEXT_VERSION }}
+          body: ${{ env.RELEASE_NOTES }}
+          draft: false
+          prerelease: false
