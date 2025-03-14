@@ -2,7 +2,7 @@
 Vyom is a personal assistant chatbot built to answer questions about Arghya Bandyopadhyay. It uses a combination of Neo4j for knowledge graph management, Streamlit for frontend interface, and a language model for intelligent query handling.
 
 ## Live Demo
-**You can interact with the live version of Vyom Chatbot here:** [Vyom Chatbot App](https://vyom-chatbot-app.onrender.com)
+**You can interact with the live version of _Vyom Chatbot_ here:** [Vyom Chatbot App](https://vyom-chatbot-app.onrender.com)
 
 ## Table of Contents
 1. [Introduction](#introduction)
